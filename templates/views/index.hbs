@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Registration Form</title>
+</head>
+<body>
+    {{>navbar}}
+    <h1>Registration Form views</h1>
+    <form action="/index" method="POST">
+        <input type="text" name="firstName"  placeholder="first Name" required/><br/><br/>
+        <input type="text" name="lastName"   placeholder="Last Name" required/><br/><br/>
+        <input type="number" name="mobile"  placeholder="Mobile Number" required/><br/><br/>
+        <input type="number" name="age"  placeholder="Enter age" required/><br/><br/>
+        <input type="email" name="email"  placeholder="Enter Email" required/><br/><br/>
+        Gender: 
+        <input type="radio" name="gender"  value="male" checked />Male
+        <input type="radio" name="gender" value="female" />Female<br/><br/>
+        <input type="password" name="password" placeholder="Enter password" required/><br/><br/>
+        <input type="password" name="conPassword" placeholder="Enter confrim pasword" required/><br/><br/>
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
