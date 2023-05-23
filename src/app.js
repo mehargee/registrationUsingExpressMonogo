@@ -49,6 +49,9 @@ app.post("/index", async (req, res) => {
                 confirmpassword: conPassword
 
             })
+// use midelware for generate token
+            const token = await registerEmployee.generateAuthToken();
+
             const regist = await registerEmployee.save();
             console.log("student is registerd sucessfully");
             res.status(200).render("home");
