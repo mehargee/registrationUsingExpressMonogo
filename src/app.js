@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
+const bcrypt = require("bcryptjs");
 
 require("../db/conn");
 const Register = require("../models/register");
@@ -25,6 +26,10 @@ hbs.registerPartials(partialsPath);
 app.get("/", (req, res) => {
     res.render("index");
 })
+
+// app.get("/home", (req, res) => {
+//     res.render("home");
+// })
 
 app.post("/index", async (req, res) => {
     try {
@@ -57,21 +62,26 @@ app.post("/index", async (req, res) => {
     }
 })
 
-app.get("/login", (req, res) =>{
+app.get("/login", (req, res) => {
     res.render("login");
 })
 
-app.post("/login", async (req, res) =>{
+app.post("/login", async (req, res) => {
     try {
         const email = req.body.email;
         const password = req.body.password;
         //is email k filter pe uska sara data useremail me aa gaya hai
-        const useremail = await Register.findOne({email:email})   //database field email: form filed name email
-            if(useremail.password === password){
-                res.status(201).render("home")
-            }else{
-                res.send("invalid login details")
-            }
+        const useremail = await Register.findOne({ email: email })   //database field email: form filed name email
+        //  if(useremail.password === password){  
+
+        // we using hash so check or compare password this method 
+        const isMatch = await bcrypt.compare(password, useremail.password);
+        if (isMatch) {
+            res.status(201).render("home");
+            console.log("login Sucessfully..!")
+        } else {
+            res.send("invalid login details")
+        }
 
     } catch (error) {
         res.status(400).send("invalid login details")
