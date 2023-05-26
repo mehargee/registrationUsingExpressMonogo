@@ -48,7 +48,7 @@ const employeeSchema = new mongoose.Schema({
 //generating token using JsonWebToken
 employeeSchema.methods.generateAuthToken = async function () {
     try {
-        const token = jwt.sign({ _id: this._id.toString() }, "mynameisasadandiamlearningmernstackdev")
+        const token = jwt.sign({ _id: this._id.toString() }, process.env.SECRET_KEY) //ye token hai jo env file me pra hai    
         this.tokens = this.tokens.concat({token:token})
         await this.save();
         console.log("token is" + token);
@@ -64,6 +64,7 @@ employeeSchema.pre("save", async function (next) {
     //jb b password create kry ya update kry, tbhi ye bcrypt ho ga.
     if (this.isModified("password")) {
         console.log(`simple passowrd --- ${this.password}`)
+        
         this.password = await bcrypt.hash(this.password, 10)
         console.log(`after hash passowrd --- ${this.password}`)
 

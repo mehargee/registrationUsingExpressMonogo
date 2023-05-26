@@ -1,12 +1,12 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
 const bcrypt = require("bcryptjs");
-
 require("../db/conn");
-const Register = require("../models/register");
 
+const Register = require("../models/register");
 const port = process.env.PORT || 3000;
 
 const staticPath = path.join(__dirname, "../public");
@@ -79,6 +79,10 @@ app.post("/login", async (req, res) => {
 
         // we using hash so check or compare password this method 
         const isMatch = await bcrypt.compare(password, useremail.password);
+        //create token when user login
+        const token = await useremail.generateAuthToken();
+        console.log("Token Part are:" + token);
+
         if (isMatch) {
             res.status(201).render("home");
             console.log("login Sucessfully..!")
