@@ -52,6 +52,12 @@ app.post("/index", async (req, res) => {
 // use midelware for generate token
             const token = await registerEmployee.generateAuthToken();
 
+            res.cookie("jwt", token, {
+                expires: new Date(Date.now() + 30000), //30sec
+                httpOnly: true  
+            }); 
+            
+
             const regist = await registerEmployee.save();
             console.log("student is registerd sucessfully");
             res.status(200).render("home");
@@ -82,6 +88,12 @@ app.post("/login", async (req, res) => {
         //create token when user login
         const token = await useremail.generateAuthToken();
         console.log("Token Part are:" + token);
+
+        res.cookie("jwt", token, {
+            expires: new Date(Date.now() + 50000), //50sec
+            httpOnly: true,
+            secure : true
+        }); 
 
         if (isMatch) {
             res.status(201).render("home");
