@@ -3,9 +3,12 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const cookieParser = require("cookie-parser");
 require("../db/conn");
 
+const auth = require("./middleware/auth")
 const Register = require("../models/register");
 const port = process.env.PORT || 3000;
 
@@ -15,6 +18,7 @@ const partialsPath = path.join(__dirname, "../templates/partials");
 // console.log(path.join(__dirname,"../templates/views"))
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(staticPath));
@@ -27,9 +31,40 @@ app.get("/", (req, res) => {
     res.render("index");
 })
 
-// app.get("/home", (req, res) => {
-//     res.render("home");
-// })
+app.get("/secret", auth, (req, res) => {
+    //console.log(`this is cookie parser ${req.cookies.jwt}`)
+    res.render("secret");
+})
+
+app.get("/logout", auth, async (req, res) => {
+    try {
+            // current user token filter out, logout only current device
+        // req.user.tokens = req.user.tokens.filter((curEle) =>{
+        //     return curEle.token !== req.token;
+        // })
+
+        //logout from the all devices
+        req.user.tokens = [];
+
+        res.clearCookie("jwt");
+        console.log("logout sucessfully");
+
+        await req.user.save();
+        res.render("login");
+
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+
+app.get("/home", (req, res) => {
+    res.render("home");
+})
+
+app.get("/login", (req, res) => {
+    res.render("login");
+})
+
 
 app.post("/index", async (req, res) => {
     try {
@@ -71,9 +106,7 @@ app.post("/index", async (req, res) => {
     }
 })
 
-app.get("/login", (req, res) => {
-    res.render("login");
-})
+//login part
 
 app.post("/login", async (req, res) => {
     try {
@@ -90,9 +123,9 @@ app.post("/login", async (req, res) => {
         console.log("Token Part are:" + token);
 
         res.cookie("jwt", token, {
-            expires: new Date(Date.now() + 50000), //50sec
+            expires: new Date(Date.now() + 600000), //50sec
             httpOnly: true,
-            secure : true
+            //secure : true
         }); 
 
         if (isMatch) {
